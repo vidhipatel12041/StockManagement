@@ -1,0 +1,39 @@
+<%- include('../layouts/header', { title: 'Branches' }) %>
+<div class="page-actions">
+  <h2><i class="bi bi-building me-2 text-primary-custom"></i>Branches</h2>
+  <a href="/branches/create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Branch</a>
+</div>
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Code</th><th>Name</th><th>Manager</th><th>Phone</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% if (branches && branches.length > 0) { %>
+          <% branches.forEach(function(branch) { %>
+          <tr>
+            <td><span class="badge bg-secondary fs-12"><%= branch.code %></span></td>
+            <td class="fw-600"><%= branch.name %></td>
+            <td><%= branch.manager || '—' %></td>
+            <td><%= branch.phone || '—' %></td>
+            <td class="text-muted"><%= branch.email || '—' %></td>
+            <td><span class="status-badge status-<%= branch.status %>"><%= branch.status %></span></td>
+            <td>
+              <div class="action-btns">
+                <a href="/branches/<%= branch._id %>/edit" class="btn btn-sm btn-outline-primary btn-icon" title="Edit"><i class="bi bi-pencil"></i></a>
+                <form method="post" action="/branches/<%= branch._id %>/delete" class="d-inline">
+                  <button class="btn btn-sm btn-outline-danger btn-icon" type="submit" title="Delete"><i class="bi bi-trash"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+          <% } else { %>
+          <tr><td colspan="7"><div class="empty-state"><i class="bi bi-building"></i><p>No branches yet. Add your first branch.</p><a href="/branches/create" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> New Branch</a></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

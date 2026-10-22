@@ -1,0 +1,40 @@
+<%- include('../layouts/header', { title: 'Products' }) %>
+<div class="page-actions">
+  <h2><i class="bi bi-box-seam me-2 text-primary-custom"></i>Products</h2>
+  <a href="/products/create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Product</a>
+</div>
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Name</th><th>SKU</th><th>Barcode</th><th>Brand</th><th>Category</th><th>Color</th><th>Size</th><th>MRP</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% if (products && products.length > 0) { %>
+          <% products.forEach(function(product) { %>
+          <tr>
+            <td class="fw-600"><%= product.name %></td>
+            <td><code class="fs-12"><%= product.sku %></code></td>
+            <td><code class="fs-12"><%= product.barcode %></code></td>
+            <td><%= product.brand ? product.brand.name : '—' %></td>
+            <td><%= product.category ? product.category.name : '—' %></td>
+            <td><% if (product.color && product.color.hexCode) { %><span class="color-swatch" style="background:<%= product.color.hexCode %>"></span><% } %><%= product.color ? product.color.name : '—' %></td>
+            <td><%= product.size ? product.size.name : '—' %></td>
+            <td><strong><%= product.mrp || '—' %></strong></td>
+            <td><span class="status-badge status-<%= product.status %>"><%= product.status %></span></td>
+            <td><div class="action-btns">
+              <a href="/products/<%= product._id %>/edit" class="btn btn-sm btn-outline-primary btn-icon"><i class="bi bi-pencil"></i></a>
+              <form method="post" action="/products/<%= product._id %>/delete" class="d-inline">
+                <button class="btn btn-sm btn-outline-danger btn-icon" type="submit"><i class="bi bi-trash"></i></button>
+              </form>
+            </div></td>
+          </tr>
+          <% }); %>
+          <% } else { %>
+          <tr><td colspan="10"><div class="empty-state"><i class="bi bi-box-seam"></i><p>No products yet. Add your first product.</p><a href="/products/create" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> New Product</a></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

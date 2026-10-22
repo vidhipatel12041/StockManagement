@@ -1,0 +1,69 @@
+<%- include('../layouts/header', { title: 'Dashboard' }) %>
+<div class="page-header mb-4">
+  <div>
+    <h2 class="page-title">Welcome back, <%= user.name.split(' ')[0] %> 👋</h2>
+    <p class="page-subtitle">Here's an overview of your inventory system.</p>
+  </div>
+</div>
+<div class="row g-4 mb-4">
+  <div class="col-xl-4 col-md-6">
+    <div class="stat-card stat-card-indigo">
+      <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-value"><%= summary.userCount %></div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <div class="stat-card stat-card-emerald">
+      <div class="stat-icon"><i class="bi bi-shield-fill-check"></i></div>
+      <div class="stat-info">
+        <div class="stat-value"><%= summary.roleCount %></div>
+        <div class="stat-label">Roles Defined</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6">
+    <div class="stat-card stat-card-amber">
+      <div class="stat-icon"><i class="bi bi-key-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-value"><%= summary.permissionCount %></div>
+        <div class="stat-label">Permissions</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title"><i class="bi bi-clock-history me-2 text-primary-custom"></i>Recent Users</h5>
+    <a href="/users" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-right"></i> View All</a>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+        <tbody>
+          <% if (summary.recentUsers && summary.recentUsers.length > 0) { %>
+          <% summary.recentUsers.forEach(function(recentUser) { %>
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="mini-avatar"><%= recentUser.name.charAt(0).toUpperCase() %></div>
+                <span class="fw-600"><%= recentUser.name %></span>
+              </div>
+            </td>
+            <td class="text-muted"><%= recentUser.email %></td>
+            <td><span class="role-badge"><%= recentUser.roleName %></span></td>
+            <td><span class="status-badge status-<%= recentUser.status %>"><%= recentUser.status %></span></td>
+          </tr>
+          <% }); %>
+          <% } else { %>
+          <tr><td colspan="4"><div class="empty-state"><i class="bi bi-people"></i><p>No users found.</p></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

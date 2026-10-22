@@ -1,0 +1,28 @@
+<%- include('../layouts/header', { title: 'Sales Import' }) %>
+
+<h3>Sales Import</h3>
+<% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+<form method="post" action="/imports/sales" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label class="form-label">Excel File</label>
+    <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required>
+  </div>
+  <button class="btn btn-success">Upload Sales Excel</button>
+</form>
+
+<% if (result) { %>
+<div class="mt-4">
+  <div class="alert alert-info"><%= result.summary.message %></div>
+  <% if (result.errors.length) { %>
+    <div class="alert alert-warning">
+      <h5>Errors</h5>
+      <ul>
+        <% result.errors.forEach(function(err) { %>
+          <li><%= err %></li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+<% } %>
+<%- include('../layouts/footer') %>

@@ -1,0 +1,135 @@
+<%- include('../layouts/header', { title: 'Transfer Details' }) %>
+<div class="page-actions mb-0">
+  <div>
+    <code class="fw-600" style="font-size:15px;"><%= transfer.transferNo %></code>
+    <span id="status-badge" class="status-badge status-<%= transfer.status %> ms-2"><%= transfer.status %></span>
+  </div>
+  <a href="/transfers" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> All Transfers</a>
+</div>
+<div class="row mt-4 g-4">
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header"><h5 class="card-title"><i class="bi bi-building me-2 text-muted"></i>From Branch</h5></div>
+      <div class="card-body">
+        <h4 class="fw-700 mb-1"><%= transfer.fromBranch ? transfer.fromBranch.name : '—' %></h4>
+        <p class="text-muted mb-0">Code: <strong><%= transfer.fromBranch ? transfer.fromBranch.code : '—' %></strong></p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header"><h5 class="card-title"><i class="bi bi-building me-2 text-muted"></i>To Branch</h5></div>
+      <div class="card-body">
+        <h4 class="fw-700 mb-1"><%= transfer.toBranch ? transfer.toBranch.name : '—' %></h4>
+        <p class="text-muted mb-0">Code: <strong><%= transfer.toBranch ? transfer.toBranch.code : '—' %></strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row mt-4 g-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><h5 class="card-title"><i class="bi bi-box-seam me-2 text-primary-custom"></i>Product</h5></div>
+      <div class="card-body">
+        <h5 class="fw-700 mb-1"><%= transfer.product ? transfer.product.name : '—' %></h5>
+        <p class="text-muted mb-1">SKU: <code><%= transfer.product ? transfer.product.sku : '—' %></code></p>
+        <p class="mb-0">Quantity: <span class="stat-value text-primary-custom" style="font-size:24px;line-height:1"><%= transfer.quantity %></span></p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><h5 class="card-title"><i class="bi bi-clock-history me-2 text-primary-custom"></i>Timeline</h5></div>
+      <div class="card-body">
+        <ul class="timeline" id="timeline">
+          <li class="timeline-item done">
+            <div class="timeline-label">Created</div>
+            <div class="timeline-time" id="created-time"><%= transfer.createdAt ? transfer.createdAt.toLocaleString() : '—' %></div>
+            <div class="timeline-by">by <%= transfer.createdBy ? transfer.createdBy.name : '—' %></div>
+          </li>
+          <% if (transfer.approvedAt) { %>
+          <li class="timeline-item done" id="approved-item">
+            <div class="timeline-label">Approved</div>
+            <div class="timeline-time" id="approved-time"><%= transfer.approvedAt.toLocaleString() %></div>
+            <div class="timeline-by">by <%= transfer.approvedBy ? transfer.approvedBy.name : '—' %></div>
+          </li>
+          <% } %>
+          <% if (transfer.dispatchedAt) { %>
+          <li class="timeline-item done" id="dispatched-item">
+            <div class="timeline-label">Dispatched</div>
+            <div class="timeline-time" id="dispatched-time"><%= transfer.dispatchedAt.toLocaleString() %></div>
+            <div class="timeline-by">by <%= transfer.dispatchedBy ? transfer.dispatchedBy.name : '—' %></div>
+          </li>
+          <% } %>
+          <% if (transfer.receivedAt) { %>
+          <li class="timeline-item done" id="received-item">
+            <div class="timeline-label">Received</div>
+            <div class="timeline-time" id="received-time"><%= transfer.receivedAt.toLocaleString() %></div>
+            <div class="timeline-by">by <%= transfer.receivedBy ? transfer.receivedBy.name : '—' %></div>
+          </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card mt-4">
+  <div class="card-body">
+    <div id="action-buttons" class="d-flex gap-2 flex-wrap">
+      <% if (transfer.status === 'pending') { %>
+        <form method="post" action="/transfers/<%= transfer._id %>/approve" class="d-inline">
+          <button class="btn btn-success"><i class="bi bi-check-circle"></i> Approve</button>
+        </form>
+        <form method="post" action="/transfers/<%= transfer._id %>/reject" class="d-inline">
+          <button class="btn btn-danger"><i class="bi bi-x-circle"></i> Reject</button>
+        </form>
+      <% } else if (transfer.status === 'approved') { %>
+        <form method="post" action="/transfers/<%= transfer._id %>/dispatch" class="d-inline">
+          <button class="btn btn-info"><i class="bi bi-truck"></i> Dispatch</button>
+        </form>
+      <% } else if (transfer.status === 'dispatched') { %>
+        <form method="post" action="/transfers/<%= transfer._id %>/receive" class="d-inline">
+          <button class="btn btn-success"><i class="bi bi-inbox-fill"></i> Mark Received</button>
+        </form>
+      <% } %>
+    </div>
+    <div id="status-message" class="alert alert-info d-none mt-3" role="alert"></div>
+  </div>
+</div>
+<script>
+  const socket = io({ auth: { userId: '<%= locals.user.id || locals.user._id %>' } });
+  const transferId = '<%= transfer._id %>';
+  const statusColors = { pending:'pending', approved:'approved', dispatched:'dispatched', received:'received', rejected:'rejected' };
+  socket.on('transferUpdate', (data) => {
+    if (data.transferId !== transferId) return;
+    const badge = document.getElementById('status-badge');
+    badge.className = 'status-badge status-' + (statusColors[data.status] || 'pending') + ' ms-2';
+    badge.textContent = data.status;
+    const message = document.getElementById('status-message');
+    message.classList.remove('d-none');
+    message.innerHTML = '<i class="bi bi-info-circle me-1"></i>Transfer updated to <strong>' + data.status + '</strong> at ' + new Date(data.timestamp).toLocaleString();
+    if (data.status === 'approved' && !document.getElementById('approved-item')) {
+      const tl = document.getElementById('timeline');
+      const li = document.createElement('li');
+      li.id='approved-item'; li.className='timeline-item done';
+      li.innerHTML='<div class="timeline-label">Approved</div><div class="timeline-time">' + new Date(data.timestamp).toLocaleString() + '</div><div class="timeline-by">by <%= locals.user.name %></div>';
+      tl.appendChild(li);
+    }
+    if (data.status === 'dispatched' && !document.getElementById('dispatched-item')) {
+      const tl = document.getElementById('timeline');
+      const li = document.createElement('li');
+      li.id='dispatched-item'; li.className='timeline-item done';
+      li.innerHTML='<div class="timeline-label">Dispatched</div><div class="timeline-time">' + new Date(data.timestamp).toLocaleString() + '</div><div class="timeline-by">by <%= locals.user.name %></div>';
+      tl.appendChild(li);
+    }
+    if (data.status === 'received' && !document.getElementById('received-item')) {
+      const tl = document.getElementById('timeline');
+      const li = document.createElement('li');
+      li.id='received-item'; li.className='timeline-item done';
+      li.innerHTML='<div class="timeline-label">Received</div><div class="timeline-time">' + new Date(data.timestamp).toLocaleString() + '</div><div class="timeline-by">by <%= locals.user.name %></div>';
+      tl.appendChild(li);
+    }
+    setTimeout(() => location.reload(), 1500);
+  });
+</script>
+<%- include('../layouts/footer') %>

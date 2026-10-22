@@ -1,0 +1,58 @@
+<%- include('../layouts/header', { title: 'Central Inventory' }) %>
+<div class="page-actions">
+  <div>
+    <h2><i class="bi bi-diagram-3 me-2 text-primary-custom"></i>Central Inventory</h2>
+    <p class="text-muted fs-13 mb-0">Real-time stock levels across all branches</p>
+  </div>
+  <a href="/central/search" class="btn btn-outline-primary"><i class="bi bi-upc-scan"></i> Barcode Search</a>
+</div>
+<div id="status-updates" class="mb-3"></div>
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Branch</th><th>Product</th><th>SKU</th><th>Quantity</th><th>Reorder Level</th><th>Status</th></tr></thead>
+        <tbody id="inventory-table">
+          <% if (inventory && inventory.length > 0) { %>
+          <% inventory.forEach(function(item) { %>
+          <tr data-branch="<%= item.branch ? item.branch._id : '' %>" data-product="<%= item.product ? item.product._id : '' %>" class="<%= item.reorderLevel && item.quantity <= item.reorderLevel ? 'row-low-stock' : '' %>">
+            <td><i class="bi bi-building me-1 text-muted"></i><%= item.branch ? item.branch.name : '—' %></td>
+            <td class="fw-600"><%= item.product ? item.product.name : '—' %></td>
+            <td><code class="fs-12"><%= item.product ? item.product.sku : '—' %></code></td>
+            <td>
+              <strong class="quantity <%= item.reorderLevel && item.quantity <= item.reorderLevel ? 'text-danger' : 'text-success' %>"><%= item.quantity %></strong>
+              <% if (item.reorderLevel && item.quantity <= item.reorderLevel) { %><span class="status-badge status-pending ms-1">Low Stock</span><% } %>
+            </td>
+            <td><%= item.reorderLevel || '—' %></td>
+            <td><span class="status-badge status-<%= item.status %>"><%= item.status %></span></td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr><td colspan="6"><div class="empty-state"><i class="bi bi-diagram-3"></i><p>No stock data available.</p></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+  const socket = io({ auth: { userId: '<%= locals.user.id || locals.user._id %>' } });
+  socket.on('stockUpdate', (data) => {
+    const row = document.querySelector('tr[data-branch="'+data.branchId+'"][data-product="'+data.productId+'"]');
+    if (row) {
+      const qCell = row.querySelector('.quantity');
+      const cur = parseInt(qCell.textContent);
+      const nq = data.type === 'in' ? cur + data.quantity : cur - data.quantity;
+      qCell.textContent = nq;
+      row.classList.add('table-warning');
+      setTimeout(() => row.classList.remove('table-warning'), 2000);
+      const container = document.getElementById('status-updates');
+      const alert = document.createElement('div');
+      alert.className = 'alert alert-info alert-dismissible fade show';
+      alert.innerHTML = '<i class="bi bi-info-circle me-1"></i>Stock '+(data.type==='in'?'received':'dispatched')+': '+data.quantity+' units <button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+      container.appendChild(alert);
+      setTimeout(() => { alert.classList.remove('show'); setTimeout(() => alert.remove(), 150); }, 5000);
+    }
+  });
+</script>
+<%- include('../layouts/footer') %>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title + ' — StockFlow' : 'StockFlow' %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <% if (locals.user) { %>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <i class="bi bi-boxes"></i>
+      <span>StockFlow</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">MAIN</div>
+      <a href="/dashboard" class="sidebar-link <%= typeof title!=='undefined'&&title==='Dashboard'?'active':'' %>"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+      <div class="sidebar-section">MASTER DATA</div>
+      <a href="/branches" class="sidebar-link <%= typeof title!=='undefined'&&title==='Branches'?'active':'' %>"><i class="bi bi-building"></i><span>Branches</span></a>
+      <a href="/brands" class="sidebar-link <%= typeof title!=='undefined'&&title==='Brands'?'active':'' %>"><i class="bi bi-award"></i><span>Brands</span></a>
+      <a href="/categories" class="sidebar-link <%= typeof title!=='undefined'&&title==='Categories'?'active':'' %>"><i class="bi bi-tags"></i><span>Categories</span></a>
+      <a href="/colors" class="sidebar-link <%= typeof title!=='undefined'&&title==='Colors'?'active':'' %>"><i class="bi bi-palette"></i><span>Colors</span></a>
+      <a href="/sizes" class="sidebar-link <%= typeof title!=='undefined'&&title==='Sizes'?'active':'' %>"><i class="bi bi-rulers"></i><span>Sizes</span></a>
+      <a href="/products" class="sidebar-link <%= typeof title!=='undefined'&&title==='Products'?'active':'' %>"><i class="bi bi-box-seam"></i><span>Products</span></a>
+      <div class="sidebar-section">INVENTORY</div>
+      <a href="/inventory" class="sidebar-link <%= typeof title!=='undefined'&&title==='Inventory Stock'?'active':'' %>"><i class="bi bi-archive"></i><span>Stock</span></a>
+      <a href="/central" class="sidebar-link <%= typeof title!=='undefined'&&title==='Central Inventory'?'active':'' %>"><i class="bi bi-diagram-3"></i><span>Central View</span></a>
+      <a href="/central/search" class="sidebar-link <%= typeof title!=='undefined'&&title==='Barcode Search'?'active':'' %>"><i class="bi bi-upc-scan"></i><span>Barcode Search</span></a>
+      <a href="/transfers" class="sidebar-link <%= typeof title!=='undefined'&&title==='Transfers'?'active':'' %>"><i class="bi bi-arrow-left-right"></i><span>Transfers</span></a>
+      <a href="/imports" class="sidebar-link <%= typeof title!=='undefined'&&title==='Imports'?'active':'' %>"><i class="bi bi-cloud-upload"></i><span>Imports</span></a>
+      <div class="sidebar-section">ADMIN</div>
+      <a href="/users" class="sidebar-link <%= typeof title!=='undefined'&&title==='Users'?'active':'' %>"><i class="bi bi-people"></i><span>Users</span></a>
+      <a href="/roles" class="sidebar-link <%= typeof title!=='undefined'&&title==='Roles'?'active':'' %>"><i class="bi bi-shield-check"></i><span>Roles</span></a>
+      <a href="/permissions" class="sidebar-link <%= typeof title!=='undefined'&&title==='Permissions'?'active':'' %>"><i class="bi bi-key"></i><span>Permissions</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar"><%= locals.user.name.charAt(0).toUpperCase() %></div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name"><%= locals.user.name %></span>
+          <span class="sidebar-user-role"><%= locals.user.roleName %></span>
+        </div>
+      </div>
+      <form action="/logout" method="post" class="mt-2">
+        <button class="btn-logout" type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>
+      </form>
+    </div>
+  </aside>
+  <div class="main-wrapper">
+    <header class="topbar">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+      <h1 class="topbar-title"><%= typeof title !== 'undefined' ? title : '' %></h1>
+      <div class="topbar-actions">
+        <a href="/notifications" class="topbar-btn notif-btn">
+          <i class="bi bi-bell"></i>
+          <span id="notif-badge" class="notif-dot d-none"></span>
+        </a>
+        <div class="topbar-avatar"><%= locals.user.name.charAt(0).toUpperCase() %></div>
+        <span class="topbar-username d-none d-md-block"><%= locals.user.name %></span>
+      </div>
+    </header>
+    <main class="content-area">
+  <% } else { %>
+  <main class="auth-wrapper">
+  <% } %>

@@ -1,0 +1,61 @@
+<%- include('../layouts/header', { title: 'Inventory History' }) %>
+<div class="page-actions">
+  <h2><i class="bi bi-clock-history me-2 text-primary-custom"></i>Inventory History</h2>
+  <a href="/imports" class="btn btn-outline-secondary"><i class="bi bi-cloud-upload"></i> Import Logs</a>
+</div>
+<div class="card mb-4">
+  <div class="card-header"><h5 class="card-title"><i class="bi bi-arrow-left-right me-2 text-primary-custom"></i>Stock Transactions</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Date</th><th>Branch</th><th>Product</th><th>Type</th><th>Qty</th><th>Reference</th><th>By</th></tr></thead>
+        <tbody>
+          <% if (transactions && transactions.length > 0) { %>
+          <% transactions.forEach(function(tx) { %>
+          <tr>
+            <td class="text-muted fs-12"><%= tx.createdAt ? tx.createdAt.toLocaleString() : '—' %></td>
+            <td><%= tx.branch ? tx.branch.name : '—' %></td>
+            <td class="fw-600"><%= tx.product ? tx.product.name : '—' %></td>
+            <td><span class="status-badge type-<%= tx.type %>"><%= tx.type === 'in' ? '📥 In' : '📤 Out' %></span></td>
+            <td><strong><%= tx.quantity %></strong></td>
+            <td><%= tx.reference || '—' %></td>
+            <td><%= tx.createdBy ? tx.createdBy.name : '—' %></td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr><td colspan="7"><div class="empty-state"><i class="bi bi-list-ul"></i><p>No transactions yet.</p></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header"><h5 class="card-title"><i class="bi bi-cloud-upload me-2 text-primary-custom"></i>Import Logs</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Date</th><th>Type</th><th>File</th><th>Status</th><th>Processed</th><th>Success</th><th>Failed</th><th>By</th></tr></thead>
+        <tbody>
+          <% if (importLogs && importLogs.length > 0) { %>
+          <% importLogs.forEach(function(log) { %>
+          <tr>
+            <td class="text-muted fs-12"><%= log.createdAt ? log.createdAt.toLocaleString() : '—' %></td>
+            <td><span class="role-badge"><%= log.type %></span></td>
+            <td class="fw-600"><%= log.fileName %></td>
+            <td><span class="status-badge status-<%= log.status %>"><%= log.status %></span></td>
+            <td><%= log.processed %></td>
+            <td class="text-success fw-600"><%= log.successCount %></td>
+            <td class="text-danger fw-600"><%= log.failedCount %></td>
+            <td><%= log.createdBy ? log.createdBy.name : '—' %></td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr><td colspan="8"><div class="empty-state"><i class="bi bi-cloud-upload"></i><p>No imports yet.</p></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

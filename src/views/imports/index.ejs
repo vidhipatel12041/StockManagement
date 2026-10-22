@@ -1,0 +1,49 @@
+<%- include('../layouts/header', { title: 'Imports' }) %>
+<div class="page-actions mb-0">
+  <h2><i class="bi bi-cloud-upload me-2 text-primary-custom"></i>Import Engine</h2>
+</div>
+<div class="row g-4 mt-1 mb-4">
+  <div class="col-md-6">
+    <a href="/imports/stock" class="import-option-card">
+      <i class="bi bi-archive"></i>
+      <h5>Stock Import</h5>
+      <p>Import stock levels from Excel spreadsheet</p>
+    </a>
+  </div>
+  <div class="col-md-6">
+    <a href="/imports/sales" class="import-option-card">
+      <i class="bi bi-graph-up-arrow"></i>
+      <h5>Sales Import</h5>
+      <p>Import sales transactions from Excel spreadsheet</p>
+    </a>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header"><h5 class="card-title"><i class="bi bi-clock-history me-2 text-primary-custom"></i>Import History</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Type</th><th>File</th><th>Status</th><th>Processed</th><th>Success</th><th>Failed</th><th>By</th><th>Date</th></tr></thead>
+        <tbody>
+          <% if (logs && logs.length > 0) { %>
+          <% logs.forEach(function(log) { %>
+          <tr>
+            <td><span class="role-badge"><%= log.type %></span></td>
+            <td class="fw-600"><%= log.fileName %></td>
+            <td><span class="status-badge status-<%= log.status %>"><%= log.status %></span></td>
+            <td><%= log.processed %></td>
+            <td class="text-success fw-600"><%= log.successCount %></td>
+            <td class="text-danger fw-600"><%= log.failedCount %></td>
+            <td><%= log.createdBy ? log.createdBy.name : '—' %></td>
+            <td class="text-muted fs-12"><%= log.createdAt ? log.createdAt.toLocaleString() : '—' %></td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr><td colspan="8"><div class="empty-state"><i class="bi bi-cloud-upload"></i><p>No imports yet. Use the options above to get started.</p></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

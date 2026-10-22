@@ -1,0 +1,31 @@
+<%- include('../layouts/header', { title: 'New Stock Transaction' }) %>
+<div class="page-actions mb-0">
+  <h2><i class="bi bi-plus-circle me-2 text-primary-custom"></i>New Stock Transaction</h2>
+  <a href="/inventory" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<div class="card mt-4">
+  <div class="card-header"><h5 class="card-title">Transaction Details</h5></div>
+  <div class="card-body">
+    <% if (error) { %><div class="alert alert-danger mb-4"><i class="bi bi-exclamation-circle-fill"></i> <%= error %></div><% } %>
+    <form method="post" action="/inventory/transactions/create">
+      <div class="row">
+        <div class="col-md-4 mb-3"><label class="form-label">Branch <span class="text-danger">*</span></label><select name="branch" class="form-select" required><option value="">Select Branch</option><% branches.forEach(function(branch) { %><option value="<%= branch._id %>" <%= values.branch == branch._id ? 'selected' : '' %>><%= branch.name %></option><% }); %></select></div>
+        <div class="col-md-4 mb-3"><label class="form-label">Product <span class="text-danger">*</span></label><select name="product" class="form-select" required><option value="">Select Product</option><% products.forEach(function(product) { %><option value="<%= product._id %>" <%= values.product == product._id ? 'selected' : '' %>><%= product.name %> (<%= product.sku %>)</option><% }); %></select></div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Transaction Type <span class="text-danger">*</span></label>
+          <select name="type" class="form-select" required>
+            <option value="in" <%= values.type === 'in' ? 'selected' : '' %>>📥 Stock In</option>
+            <option value="out" <%= values.type === 'out' ? 'selected' : '' %>>📤 Stock Out</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 mb-3"><label class="form-label">Quantity <span class="text-danger">*</span></label><input name="quantity" type="number" min="1" step="1" class="form-control" value="<%= values.quantity || '' %>" placeholder="0" required></div>
+        <div class="col-md-4 mb-3"><label class="form-label">Reference</label><input name="reference" class="form-control" value="<%= values.reference || '' %>" placeholder="Invoice / PO number"></div>
+        <div class="col-md-4 mb-3"><label class="form-label">Notes</label><input name="notes" class="form-control" value="<%= values.notes || '' %>" placeholder="Optional notes"></div>
+      </div>
+      <div class="form-actions"><button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Record Transaction</button><a href="/inventory" class="btn btn-outline-secondary">Cancel</a></div>
+    </form>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

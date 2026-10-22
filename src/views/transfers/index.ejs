@@ -1,0 +1,33 @@
+<%- include('../layouts/header', { title: 'Transfers' }) %>
+<div class="page-actions">
+  <h2><i class="bi bi-arrow-left-right me-2 text-primary-custom"></i>Inter-Branch Transfers</h2>
+  <a href="/transfers/create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Transfer</a>
+</div>
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Transfer No</th><th>From Branch</th><th>To Branch</th><th>Product</th><th>Qty</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% if (transfers && transfers.length > 0) { %>
+          <% transfers.forEach(function(t) { %>
+          <tr>
+            <td><code class="fw-600 fs-12"><%= t.transferNo %></code></td>
+            <td><i class="bi bi-building me-1 text-muted"></i><%= t.fromBranch ? t.fromBranch.name : '—' %></td>
+            <td><i class="bi bi-building me-1 text-muted"></i><%= t.toBranch ? t.toBranch.name : '—' %></td>
+            <td class="fw-600"><%= t.product ? t.product.name : '—' %></td>
+            <td><strong><%= t.quantity %></strong></td>
+            <td><span class="status-badge status-<%= t.status %>"><%= t.status %></span></td>
+            <td class="text-muted fs-12"><%= t.createdAt ? t.createdAt.toLocaleDateString() : '—' %></td>
+            <td><a href="/transfers/<%= t._id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a></td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr><td colspan="8"><div class="empty-state"><i class="bi bi-arrow-left-right"></i><p>No transfers yet.</p><a href="/transfers/create" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> New Transfer</a></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

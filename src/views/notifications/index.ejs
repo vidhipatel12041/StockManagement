@@ -1,0 +1,65 @@
+<%- include('../layouts/header', { title: 'Notifications' }) %>
+<div class="page-actions">
+  <h2><i class="bi bi-bell me-2 text-primary-custom"></i>Notifications</h2>
+  <button id="btn-mark-all-read" class="btn btn-outline-secondary"><i class="bi bi-check-all"></i> Mark All as Read</button>
+</div>
+<% if (!notifications || notifications.length === 0) { %>
+  <div class="card">
+    <div class="card-body">
+      <div class="empty-state"><i class="bi bi-bell-slash"></i><p>No notifications yet. You're all caught up!</p></div>
+    </div>
+  </div>
+<% } else { %>
+  <div id="notifications-list">
+    <% notifications.forEach(function(n) { %>
+    <div class="notif-item <%= !n.isRead ? 'unread' : '' %>" data-id="<%= n._id %>">
+      <% if (!n.isRead) { %><div class="notif-unread-dot"></div><% } %>
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-<%= n.type === 'transfer' ? 'primary' : n.type === 'approval' ? 'warning' : n.type === 'stock' ? 'info' : 'secondary' %>"><%= n.type %></span>
+            <strong><%= n.subject %></strong>
+          </div>
+          <p class="mb-1 text-muted"><%= n.message %></p>
+          <small class="text-muted"><i class="bi bi-clock me-1"></i><%= n.createdAt ? n.createdAt.toLocaleString() : '—' %></small>
+        </div>
+        <div class="d-flex gap-2 flex-shrink-0">
+          <% if (!n.isRead) { %><button class="btn btn-sm btn-outline-primary btn-read" data-id="<%= n._id %>"><i class="bi bi-check"></i> Read</button><% } %>
+          <button class="btn btn-sm btn-outline-danger btn-delete" data-id="<%= n._id %>"><i class="bi bi-trash"></i></button>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+<% } %>
+<script>
+  const socket = io({ auth: { userId: '<%= locals.user.id || locals.user._id %>' } });
+  socket.on('notification', (data) => {
+    if (data.type === 'newNotification') {
+      const notif = data.data;
+      let list = document.getElementById('notifications-list');
+      if (!list) { list = document.createElement('div'); list.id='notifications-list'; document.querySelector('.content-area').appendChild(list); }
+      const div = document.createElement('div');
+      div.className = 'notif-item unread'; div.dataset.id = notif.id;
+      div.innerHTML = '<div class="notif-unread-dot"></div><div class="d-flex justify-content-between align-items-start gap-3"><div class="flex-grow-1"><div class="d-flex align-items-center gap-2 mb-1"><span class="badge bg-info">'+notif.type+'</span><strong>'+notif.subject+'</strong></div><p class="mb-1 text-muted">'+notif.message+'</p><small class="text-muted"><i class="bi bi-clock me-1"></i>'+new Date().toLocaleString()+'</small></div><div class="d-flex gap-2 flex-shrink-0"><button class="btn btn-sm btn-outline-primary btn-read" data-id="'+notif.id+'"><i class="bi bi-check"></i> Read</button><button class="btn btn-sm btn-outline-danger btn-delete" data-id="'+notif.id+'"><i class="bi bi-trash"></i></button></div></div>';
+      list.prepend(div);
+    }
+  });
+  document.addEventListener('click', async (e) => {
+    if (e.target.closest('.btn-read')) {
+      const btn = e.target.closest('.btn-read'); const id = btn.dataset.id;
+      const res = await fetch('/notifications/'+id+'/read', {method:'POST'});
+      if (res.ok) { const item = btn.closest('.notif-item'); item.classList.remove('unread'); const dot = item.querySelector('.notif-unread-dot'); if(dot) dot.remove(); btn.remove(); }
+    }
+    if (e.target.closest('.btn-delete')) {
+      const btn = e.target.closest('.btn-delete'); const id = btn.dataset.id;
+      const res = await fetch('/notifications/'+id, {method:'DELETE'});
+      if (res.ok) { btn.closest('.notif-item').remove(); }
+    }
+  });
+  document.getElementById('btn-mark-all-read')?.addEventListener('click', async () => {
+    const res = await fetch('/notifications/mark-all-read', {method:'POST'});
+    if (res.ok) { document.querySelectorAll('.notif-item').forEach(i=>{ i.classList.remove('unread'); const d=i.querySelector('.notif-unread-dot'); if(d)d.remove(); i.querySelectorAll('.btn-read').forEach(b=>b.remove()); }); }
+  });
+</script>
+<%- include('../layouts/footer') %>

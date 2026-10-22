@@ -1,0 +1,26 @@
+<%- include('../layouts/header', { title: 'Edit User' }) %>
+<div class="page-actions mb-0">
+  <h2><i class="bi bi-person-gear me-2 text-primary-custom"></i>Edit User</h2>
+  <a href="/users" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<div class="card mt-4">
+  <div class="card-header"><h5 class="card-title">User Details</h5></div>
+  <div class="card-body">
+    <% if (error) { %><div class="alert alert-danger mb-4"><i class="bi bi-exclamation-circle-fill"></i> <%= error %></div><% } %>
+    <form method="post" action="/users/<%= values._id %>/edit">
+      <div class="mb-3"><label class="form-label">Full Name <span class="text-danger">*</span></label><input name="name" class="form-control" value="<%= values.name || '' %>" required></div>
+      <div class="mb-3"><label class="form-label">Email Address <span class="text-danger">*</span></label><input name="email" type="email" class="form-control" value="<%= values.email || '' %>" required></div>
+      <div class="mb-3"><label class="form-label">New Password <span class="text-muted fs-12">(leave blank to keep current)</span></label><input name="password" type="password" class="form-control" placeholder="Leave blank to keep current password"></div>
+      <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-select">
+          <option value="">Staff</option>
+          <% roles.forEach(function(role) { %><option value="<%= role._id %>" <%= values.role && values.role.toString() === role._id.toString() ? 'selected' : '' %>><%= role.name %></option><% }); %>
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label">Status</label><select name="status" class="form-select"><option value="active" <%= values.status === 'active' ? 'selected' : '' %>>Active</option><option value="inactive" <%= values.status === 'inactive' ? 'selected' : '' %>>Inactive</option></select></div>
+      <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button><a href="/users" class="btn btn-outline-secondary">Cancel</a></div>
+    </form>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

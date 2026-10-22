@@ -1,0 +1,40 @@
+<%- include('../layouts/header', { title: 'Users' }) %>
+<div class="page-actions">
+  <h2><i class="bi bi-people me-2 text-primary-custom"></i>Users</h2>
+  <a href="/users/create" class="btn btn-primary"><i class="bi bi-person-plus"></i> New User</a>
+</div>
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% if (users && users.length > 0) { %>
+          <% users.forEach(function(item) { %>
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="mini-avatar"><%= item.name.charAt(0).toUpperCase() %></div>
+                <span class="fw-600"><%= item.name %></span>
+              </div>
+            </td>
+            <td class="text-muted"><%= item.email %></td>
+            <td><span class="role-badge"><%= item.roleName %></span></td>
+            <td><span class="status-badge status-<%= item.status %>"><%= item.status %></span></td>
+            <td><div class="action-btns">
+              <a href="/users/<%= item._id %>/edit" class="btn btn-sm btn-outline-primary btn-icon"><i class="bi bi-pencil"></i></a>
+              <form method="post" action="/users/<%= item._id %>/delete" class="d-inline">
+                <button class="btn btn-sm btn-outline-danger btn-icon" type="submit"><i class="bi bi-trash"></i></button>
+              </form>
+            </div></td>
+          </tr>
+          <% }); %>
+          <% } else { %>
+          <tr><td colspan="5"><div class="empty-state"><i class="bi bi-people"></i><p>No users yet.</p><a href="/users/create" class="btn btn-primary btn-sm"><i class="bi bi-person-plus"></i> New User</a></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

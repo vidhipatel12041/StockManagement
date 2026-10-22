@@ -1,0 +1,20 @@
+<%- include('../layouts/header', { title: 'Create Permission' }) %>
+<div class="page-actions mb-0">
+  <h2><i class="bi bi-key me-2 text-primary-custom"></i>Create Permission</h2>
+  <a href="/permissions" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<div class="card mt-4">
+  <div class="card-header"><h5 class="card-title">Permission Details</h5></div>
+  <div class="card-body">
+    <% if (error) { %><div class="alert alert-danger mb-4"><i class="bi bi-exclamation-circle-fill"></i> <%= error %></div><% } %>
+    <form method="post" action="/permissions/create">
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">Name <span class="text-danger">*</span></label><input name="name" class="form-control" value="<%= values.name || '' %>" placeholder="e.g. Manage Users" required></div>
+        <div class="col-md-6 mb-3"><label class="form-label">Key <span class="text-danger">*</span></label><input name="key" class="form-control" value="<%= values.key || '' %>" placeholder="e.g. MANAGE_USERS" required></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" placeholder="What does this permission allow?"><%= values.description || '' %></textarea></div>
+      <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Create Permission</button><a href="/permissions" class="btn btn-outline-secondary">Cancel</a></div>
+    </form>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

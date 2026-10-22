@@ -1,0 +1,43 @@
+<%- include('../layouts/header', { title: 'Inventory Stock' }) %>
+<div class="page-actions">
+  <div>
+    <h2><i class="bi bi-archive me-2 text-primary-custom"></i>Inventory Stock</h2>
+    <p class="text-muted fs-13 mb-0">Current stock levels by branch and product</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="/inventory/transactions/create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Transaction</a>
+    <a href="/inventory/history" class="btn btn-outline-secondary"><i class="bi bi-clock-history"></i> History</a>
+    <a href="/inventory/engine" class="btn btn-outline-warning"><i class="bi bi-gear"></i> Engine</a>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Branch</th><th>Product</th><th>SKU</th><th>Quantity</th><th>Reorder Level</th><th>Status</th></tr></thead>
+        <tbody>
+          <% if (stock && stock.length > 0) { %>
+          <% stock.forEach(function(item) { %>
+          <tr class="<%= item.reorderLevel && item.quantity <= item.reorderLevel ? 'row-low-stock' : '' %>">
+            <td><i class="bi bi-building me-1 text-muted"></i><%= item.branch ? item.branch.name : '—' %></td>
+            <td class="fw-600"><%= item.product ? item.product.name : '—' %></td>
+            <td><code class="fs-12"><%= item.product ? item.product.sku : '—' %></code></td>
+            <td>
+              <strong class="<%= item.reorderLevel && item.quantity <= item.reorderLevel ? 'text-danger' : 'text-success' %>"><%= item.quantity %></strong>
+              <% if (item.reorderLevel && item.quantity <= item.reorderLevel) { %>
+                <span class="status-badge status-pending ms-1">Low Stock</span>
+              <% } %>
+            </td>
+            <td><%= item.reorderLevel != null ? item.reorderLevel : 0 %></td>
+            <td><span class="status-badge status-<%= item.status %>"><%= item.status %></span></td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr><td colspan="6"><div class="empty-state"><i class="bi bi-archive"></i><p>No stock records yet.</p><a href="/inventory/transactions/create" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Stock</a></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

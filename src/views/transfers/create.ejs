@@ -1,0 +1,36 @@
+<%- include('../layouts/header', { title: 'Create Transfer' }) %>
+<div class="page-actions mb-0">
+  <h2><i class="bi bi-arrow-left-right me-2 text-primary-custom"></i>Create Transfer</h2>
+  <a href="/transfers" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<div class="card mt-4">
+  <div class="card-header"><h5 class="card-title">Transfer Details</h5></div>
+  <div class="card-body">
+    <% if (error) { %><div class="alert alert-danger mb-4"><i class="bi bi-exclamation-circle-fill"></i> <%= error %></div><% } %>
+    <form method="post" action="/transfers/create">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">From Branch <span class="text-danger">*</span></label>
+          <select name="fromBranch" class="form-select" required><option value="">Select Source Branch</option><% branches.forEach(function(b) { %><option value="<%= b._id %>" <%= values.fromBranch == b._id ? 'selected' : '' %>><%= b.name %></option><% }); %></select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">To Branch <span class="text-danger">*</span></label>
+          <select name="toBranch" class="form-select" required><option value="">Select Destination Branch</option><% branches.forEach(function(b) { %><option value="<%= b._id %>" <%= values.toBranch == b._id ? 'selected' : '' %>><%= b.name %></option><% }); %></select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8 mb-3">
+          <label class="form-label">Product <span class="text-danger">*</span></label>
+          <select name="product" class="form-select" required><option value="">Select Product</option><% products.forEach(function(p) { %><option value="<%= p._id %>" <%= values.product == p._id ? 'selected' : '' %>><%= p.name %> (<%= p.sku %>)</option><% }); %></select>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Quantity <span class="text-danger">*</span></label>
+          <input name="quantity" type="number" min="1" class="form-control" value="<%= values.quantity || '' %>" placeholder="1" required>
+        </div>
+      </div>
+      <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" placeholder="Optional notes about this transfer"><%= values.notes || '' %></textarea></div>
+      <div class="form-actions"><button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Create Transfer</button><a href="/transfers" class="btn btn-outline-secondary">Cancel</a></div>
+    </form>
+  </div>
+</div>
+<%- include('../layouts/footer') %>

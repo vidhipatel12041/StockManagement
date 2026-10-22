@@ -1,0 +1,27 @@
+<%- include('../layouts/header', { title: 'Inventory Engine' }) %>
+<div class="row justify-content-center mt-4">
+  <div class="col-md-8">
+    <div class="engine-card">
+      <i class="bi bi-gear-wide-connected"></i>
+      <h3>Inventory Reconciliation Engine</h3>
+      <p>This will rebuild all stock levels from scratch based on recorded inventory transactions. Use this to fix any discrepancies between actual and recorded stock.</p>
+      <form method="post" action="/inventory/engine">
+        <button class="btn btn-warning btn-lg"><i class="bi bi-play-circle"></i> Run Reconciliation</button>
+      </form>
+    </div>
+    <% if (error) { %>
+    <div class="alert alert-danger mt-4"><i class="bi bi-exclamation-circle-fill"></i> <%= error %></div>
+    <% } %>
+    <% if (result) { %>
+    <div class="card mt-4">
+      <div class="card-body text-center">
+        <i class="bi bi-check-circle-fill text-success" style="font-size:40px;"></i>
+        <h4 class="mt-3">Reconciliation Complete</h4>
+        <p class="text-muted">Successfully reconciled <strong><%= result.reconciled %></strong> branch/product stock records.</p>
+        <a href="/inventory" class="btn btn-primary"><i class="bi bi-archive"></i> View Stock</a>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+<%- include('../layouts/footer') %>
